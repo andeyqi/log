@@ -108,7 +108,7 @@ int dolog2file (enum logLevel level,const char *format, ...)
     static const char * logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
     int len = 0;
-    struct  timeval    tv;
+    struct  timeval tv;
     /* Get system time */
     gettimeofday(&tv,NULL);
     va_list args;
