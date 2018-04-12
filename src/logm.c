@@ -49,7 +49,7 @@ logm_struct_p g_logm_obj_p;
  * @return write data length
  */
 
-int log2file_init(logme_tcb_t * param)
+int log2file_init(logm_tcb_t * param)
 {  
     int fd,len;
     char* temp_file_path;
@@ -83,7 +83,7 @@ int log2file_init(logme_tcb_t * param)
  * @return write data length
  */
 
-int log2file_cleanup(logme_tcb_t * param)
+int log2file_cleanup(logm_tcb_t * param)
 {
 #if 0   
     fd = open(LOG_PATH,O_RDWR | O_CREAT | O_TRUNC, 0777);
@@ -150,5 +150,3 @@ logm_struct_t g_logm_obj = {
     //.logout     = dolog2file,
 };
 logm_struct_p g_logm_obj_p = &g_logm_obj;
-
-

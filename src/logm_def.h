@@ -28,23 +28,19 @@
 #ifndef __LOGM_DEF_H__
 #define __LOGM_DEF_H__
 
+#include "logm.h"
+
 #define PER_LOG_LIMIT   (200)
-typedef enum logm_loglevel{
-    LOG_DEBUG = 0,
-    LOG_INFO,
-    LOG_WARNING,
-    LOG_ERR,
-}logm_loglevel_t,*logm_loglevel_p;
 
 typedef struct logm_tcb{
     int              len_limit;
     logm_loglevel_t  level;
     char*            path;
     char*            file_name;
-}logme_tcb_t,*logm_tcb_p;
+}logm_tcb_t,*logm_tcb_p;
 
 typedef struct logm_struct{
-    logme_tcb_t tcb; 
+    logm_tcb_t tcb; 
     int fd;
     pthread_mutex_t lock;
     int is_initd;

@@ -28,19 +28,25 @@
 #ifndef __LOGM_H__
 #define __LOGM_H__
 
-enum logm_cmdid{
+typedef enum logm_loglevel{
+    LOG_DEBUG = 0,
+    LOG_INFO,
+    LOG_WARNING,
+    LOG_ERR,
+}logm_loglevel_t,*logm_loglevel_p;
+
+typedef enum logm_cmdid{
     CMD_ID_SET_FILE_LIMIT = 0,              /*0:set log file max size,unit KB*/
     CMD_ID_SET_FILE_PATH,                   /*1:set log output path*/
 }logm_cmdid_t,*logm_cmdid_p;
 
+extern int dolog2file (logm_loglevel_t level,const char *format, ...);
 
-extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
-
-extern logm_debug(const char *format, ...);
-extern logm_info(const char *format, ...);
-extern log_warning(const char *format, ...);
-extern log_err(const char *format, ...);
+#define logm_debug(fmt, ...)         dolog2file(LOG_DEBUG,fmt,##__VA_ARGS__)
+#define logm_info(fmt, ...)          dolog2file(LOG_INFO,fmt,##__VA_ARGS__)
+#define logm_warning(fmt, ...)       dolog2file(LOG_WARNING,fmt,##__VA_ARGS__)
+#define logm_err(fmt, ...)           dolog2file(LOG_ERR,fmt,##__VA_ARGS__)
+//extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
  
- 
- #endif /* end of __LOGM_H__*/
+#endif /* end of __LOGM_H__*/
  

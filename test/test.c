@@ -25,22 +25,20 @@
  * Function: Initialize function and other general function.
  * Created on: 2018-4-11
  */
-#ifndef __LOGM_H__
-#define __LOGM_H__
+#include "logm.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-enum logm_cmdid{
-    CMD_ID_SET_FILE_LIMIT = 0,              /*0:set log file max size,unit KB*/
-    CMD_ID_SET_FILE_PATH,                   /*1:set log output path*/
-}logm_cmdid_t,*logm_cmdid_p;
-
-
-extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
-
-extern logm_debug(const char *format, ...);
-extern logm_info(const char *format, ...);
-extern log_warning(const char *format, ...);
-extern log_err(const char *format, ...);
- 
- 
- #endif /* end of __LOGM_H__*/
- 
+int main(int argc,char ** argv)
+{
+    while(1)
+    {
+        logm_debug("hello %d\n",1);
+        logm_info("hello %d\n",2);         
+        logm_warning("hello %d\n",3);       
+        logm_err("hello %d\n",4); 
+        sleep(1);
+    }
+    return 0;
+}
