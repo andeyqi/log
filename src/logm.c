@@ -49,7 +49,7 @@ logm_struct_p g_logm_obj_p;
  * @return write data length
  */
 
-int log2file_init(logm_tcb_t * param)
+static int log2file_init(logm_tcb_t * param)
 {  
     int fd,len;
     char* temp_file_path;
@@ -83,7 +83,7 @@ int log2file_init(logm_tcb_t * param)
  * @return write data length
  */
 
-int log2file_cleanup(logm_tcb_t * param)
+static int log2file_cleanup(logm_tcb_t * param)
 {
 #if 0   
     fd = open(LOG_PATH,O_RDWR | O_CREAT | O_TRUNC, 0777);
@@ -106,7 +106,7 @@ int log2file_cleanup(logm_tcb_t * param)
 
 int dolog2file (logm_loglevel_t level,const char *format, ...)
 {  
-    static const char * logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
+    static const char * const logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
     int len = 0;
     
