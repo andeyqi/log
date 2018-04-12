@@ -29,9 +29,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
+
+void * start_routine (void *data)
+{
+    while(1)
+    {
+        logm_debug("<thread id is %lu>\n",pthread_self());
+        //usleep(100*1000);
+    }
+}
 
 int main(int argc,char ** argv)
 {
+    
+ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+                          void *(*start_routine) (void *), void *arg);
+    pthread_t pid;
+    int i = 0;
+    for(i = 0 ; i < 10 ; i++)
+    {
+        pthread_create(&pid,NULL,start_routine,NULL);
+        if(pid < 0)
+        {
+            printf("create thread failed i = [%d]\n",i);
+        }
+            
+    }
     while(1)
     {
         logm_debug("hello %d\n",1);

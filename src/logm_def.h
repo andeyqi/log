@@ -31,6 +31,7 @@
 #include "logm.h"
 
 #define PER_LOG_LIMIT   (200)
+#define KB              (1024)
 
 typedef struct logm_tcb{
     int              len_limit;

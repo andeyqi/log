@@ -35,9 +35,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "logm_def.h"
 #include "logm_cfg.h"
-#include <pthread.h>
+
 
 logm_struct_p g_logm_obj_p;
 
@@ -109,7 +110,7 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
     static const char * const logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
     int len = 0;
-    
+    pthread_mutex_lock(&g_logm_obj_p->lock);
     if(!g_logm_obj_p->is_initd)
     {
         g_logm_obj_p->init(NULL);
@@ -126,12 +127,13 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
     /* Write to file */
     if(g_logm_obj_p->tcb.level <= level)
     {
-        if((len + lseek(g_logm_obj_p->fd, 0L, SEEK_CUR)) > g_logm_obj_p->tcb.len_limit)
+        if((len + lseek(g_logm_obj_p->fd, 0L, SEEK_CUR)) > g_logm_obj_p->tcb.len_limit*KB)
         {
             lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }
         write(g_logm_obj_p->fd,buff,len);
     }
+    pthread_mutex_unlock(&g_logm_obj_p->lock);
     return 0;
 }
 

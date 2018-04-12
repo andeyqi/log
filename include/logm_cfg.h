@@ -25,3 +25,7 @@
  * Function: Initialize function and other general function.
  * Created on: 2018-4-11
  */
+#ifndef __LOGM_CFG_H__
+#define __LOGM_CFG_H__
+
+#endif /* end of __LOGM_CFG_H__ */
