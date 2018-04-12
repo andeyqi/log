@@ -39,6 +39,9 @@
 #include "logm_def.h"
 #include "logm_cfg.h"
 
+#ifdef USE_TIME_MODE_YY_MM_DD_HH_MM_MM
+#include <sys/timeb.h>
+#endif
 
 logm_struct_p g_logm_obj_p;
 
@@ -115,12 +118,24 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
     {
         g_logm_obj_p->init(NULL);
     }
+#ifndef USE_TIME_MODE_YY_MM_DD_HH_MM_MM	
     struct  timeval tv;
     /* Get system time */
     gettimeofday(&tv,NULL);
-    va_list args;
     len = snprintf(buff,PER_LOG_LIMIT,"[%ld:%ld][%s]",tv.tv_sec,tv.tv_usec/1000,logLeverStr[level]);
-    /* Package data */
+#else
+	time_t curr;
+	struct tm * ptm;
+	struct timeb timetemp;
+
+	time(&curr);
+	ftime(&timetemp);
+	ptm = localtime(&timetemp.time);
+	len = snprintf(buff,PER_LOG_LIMIT,"[%4d-%02d-%02d %02d:%02d:%02d :%3d][%s]",ptm->tm_year + 1900, ptm->tm_mon + 1,\
+					ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec,timetemp.millitm,logLeverStr[level]);
+#endif					
+	va_list args;
+	/* Package data */
     va_start(args, format);
     len += vsnprintf(&buff[len],PER_LOG_LIMIT-len,format,args);
     va_end(args);

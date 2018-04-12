@@ -28,4 +28,6 @@
 #ifndef __LOGM_CFG_H__
 #define __LOGM_CFG_H__
 
+#define USE_TIME_MODE_YY_MM_DD_HH_MM_MM
+
 #endif /* end of __LOGM_CFG_H__ */
