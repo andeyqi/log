@@ -25,33 +25,22 @@
  * Function: Initialize function and other general function.
  * Created on: 2018-4-11
  */
-#ifndef __LOGM_DEF_H__
-#define __LOGM_DEF_H__
+#ifndef __LOGM_H__
+#define __LOGM_H__
 
-#define PER_LOG_LIMIT   (200)
-typedef enum logm_loglevel{
-    LOG_DEBUG = 0,
-    LOG_INFO,
-    LOG_WARNING,
-    LOG_ERR,
-}logm_loglevel_t,*logm_loglevel_p;
+enum logm_cmdid{
+    CMD_ID_SET_FILE_LIMIT = 0,              /*0:set log file max size,unit KB*/
+    CMD_ID_SET_FILE_PATH,                   /*1:set log output path*/
+}logm_cmdid_t,*logm_cmdid_p;
 
-typedef struct logm_tcb{
-    int              len_limit;
-    logm_loglevel_t  level;
-    char*            path;
-    char*            file_name;
-}logme_tcb_t,*logm_tcb_p;
 
-typedef struct logm_struct{
-    logme_tcb_t tcb; 
-    int fd;
-    pthread_mutex_t lock;
-    int is_initd;
-    int (*init)(logm_tcb_p);
-    int (*cleanup)(logm_tcb_p);
-    int (*ctrl)(unsigned int cmdid,void * data);
-    //int (*logout)(logm_loglevel_t level,const char *format, ...);
-}logm_struct_t,*logm_struct_p;
+extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
 
-#endif /* end of __LOGM_DEF_H__ */
+extern logm_debug(const char *format, ...);
+extern logm_info(const char *format, ...);
+extern log_warning(const char *format, ...);
+extern log_err(const char *format, ...);
+ 
+ 
+ #endif /* end of __LOGM_H__*/
+ 

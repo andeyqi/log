@@ -35,27 +35,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "logm_def.h"
+#include "logm_cfg.h"
+#include <pthread.h>
 
-enum logLevel
-{
-    LOG_DEBUG = 0,
-    LOG_INFO,
-    LOG_WARNING,
-    LOG_ERR,
-};
-
-struct log_manage_paras
-{
-    /* log file control start*/
-    /* log file control end */
-}log_manage_paras_t,*log_manage_paras_p;
-
-struct log_manage
-{
-    int (*init)();
-    int (*cleanup)();
-    int (*ctrl)();
-}log_manage_t,*log_manage_p;
+logm_struct_p g_logm_obj_p;
 
 /**
  *
@@ -65,15 +49,30 @@ struct log_manage
  * @return write data length
  */
 
-int log2file_init(struct logCtrl * initObj)
-{
-    fd = open(LOG_PATH,O_RDWR | O_CREAT | O_TRUNC, 0777);
+int log2file_init(logme_tcb_t * param)
+{  
+    int fd,len;
+    char* temp_file_path;
+    
+    /*check log output path*/
+    if(access(g_logm_obj_p->tcb.path,F_OK))
+    {
+        printf("path err\n");
+        return -1;
+    }
+    len = strlen(g_logm_obj_p->tcb.path)+strlen(g_logm_obj_p->tcb.file_name)+1;
+    temp_file_path = (char*)malloc(len);
+    snprintf(temp_file_path,len,"%s%s",g_logm_obj_p->tcb.path,g_logm_obj_p->tcb.file_name);
+    /* open log output file  */
+    fd = open(temp_file_path,O_RDWR | O_CREAT | O_TRUNC, 0777);
     if(fd < 0)
     {
         return -1;
     }
-    gLogCtrlObj.fd = fd;
-    return 0;
+    g_logm_obj_p->fd = fd;
+    g_logm_obj_p->is_initd = 1;
+    free(temp_file_path);
+    return 0;  
 }
 
 /**
@@ -84,8 +83,9 @@ int log2file_init(struct logCtrl * initObj)
  * @return write data length
  */
 
-int log2file_cleanup(struct logCtrl * initObj)
+int log2file_cleanup(logme_tcb_t * param)
 {
+#if 0   
     fd = open(LOG_PATH,O_RDWR | O_CREAT | O_TRUNC, 0777);
     if(fd < 0)
     {
@@ -93,6 +93,7 @@ int log2file_cleanup(struct logCtrl * initObj)
     }
     gLogCtrlObj.fd = fd;
     return 0;
+#endif  
 }
 
 /**
@@ -103,11 +104,16 @@ int log2file_cleanup(struct logCtrl * initObj)
  * @return write data length
  */
 
-int dolog2file (enum logLevel level,const char *format, ...)
-{
+int dolog2file (logm_loglevel_t level,const char *format, ...)
+{  
     static const char * logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
     int len = 0;
+    
+    if(!g_logm_obj_p->is_initd)
+    {
+        g_logm_obj_p->init(NULL);
+    }
     struct  timeval tv;
     /* Get system time */
     gettimeofday(&tv,NULL);
@@ -118,19 +124,31 @@ int dolog2file (enum logLevel level,const char *format, ...)
     len += vsnprintf(&buff[len],PER_LOG_LIMIT-len,format,args);
     va_end(args);
     /* Write to file */
-    if(gLogCtrlObj.level <= level)
+    if(g_logm_obj_p->tcb.level <= level)
     {
-        if((len + lseek(gLogCtrlObj.fd, 0L, SEEK_CUR)) > gLogCtrlObj.logSize)
+        if((len + lseek(g_logm_obj_p->fd, 0L, SEEK_CUR)) > g_logm_obj_p->tcb.len_limit)
         {
-            lseek(gLogCtrlObj.fd, 0L, SEEK_SET);
+            lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }
-        write(gLogCtrlObj.fd,buff,len);
+        write(g_logm_obj_p->fd,buff,len);
     }
     return 0;
 }
 
-
-
-
+logm_struct_t g_logm_obj = {
+    .tcb = {
+            .len_limit  = 2048,
+            .path       = "./",
+            .file_name  = "logm.log",
+            .level      = LOG_DEBUG,
+        },
+    .fd = -1,
+    .is_initd = 0,
+    .lock = PTHREAD_MUTEX_INITIALIZER,
+    .init       = log2file_init,
+    .cleanup    = log2file_cleanup,
+    //.logout     = dolog2file,
+};
+logm_struct_p g_logm_obj_p = &g_logm_obj;
 
 
