@@ -156,6 +156,7 @@ logm_struct_t g_logm_obj = {
             .file_name  = "logm.log",
             .level      = LOG_DEBUG,
         },
+    .name = "log2file",
     .fd = -1,
     .is_initd = 0,
     .lock = PTHREAD_MUTEX_INITIALIZER,

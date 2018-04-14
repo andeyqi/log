@@ -41,7 +41,8 @@ typedef struct logm_tcb{
 }logm_tcb_t,*logm_tcb_p;
 
 typedef struct logm_struct{
-    logm_tcb_t tcb; 
+    logm_tcb_t tcb;
+    char* name;
     int fd;
     pthread_mutex_t lock;
     int is_initd;

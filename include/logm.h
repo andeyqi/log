@@ -28,6 +28,10 @@
 #ifndef __LOGM_H__
 #define __LOGM_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum logm_loglevel{
     LOG_DEBUG = 0,
     LOG_INFO,
@@ -47,6 +51,10 @@ extern int dolog2file (logm_loglevel_t level,const char *format, ...);
 #define logm_warning(fmt, ...)       dolog2file(LOG_WARNING,fmt,##__VA_ARGS__)
 #define logm_err(fmt, ...)           dolog2file(LOG_ERR,fmt,##__VA_ARGS__)
 //extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
+
+#ifdef __cplusplus
+}
+#endif
  
 #endif /* end of __LOGM_H__*/
  
