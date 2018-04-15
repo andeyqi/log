@@ -29,5 +29,5 @@
 #define __LOGM_CFG_H__
 
 #define USE_TIME_MODE_YY_MM_DD_HH_MM_MM
-
+#define USE_MONITOR_TASK
 #endif /* end of __LOGM_CFG_H__ */

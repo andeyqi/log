@@ -49,7 +49,7 @@ typedef struct logm_struct{
     int (*init)(logm_tcb_p);
     int (*cleanup)(logm_tcb_p);
     int (*ctrl)(unsigned int cmdid,void * data);
-    //int (*logout)(logm_loglevel_t level,const char *format, ...);
+    int (*logout)(logm_loglevel_t level,const char *format, ...);
 }logm_struct_t,*logm_struct_p;
 
 #endif /* end of __LOGM_DEF_H__ */

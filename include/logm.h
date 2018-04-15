@@ -40,8 +40,12 @@ typedef enum logm_loglevel{
 }logm_loglevel_t,*logm_loglevel_p;
 
 typedef enum logm_cmdid{
-    CMD_ID_SET_FILE_LIMIT = 0,              /*0:set log file max size,unit KB*/
-    CMD_ID_SET_FILE_PATH,                   /*1:set log output path*/
+    CMD_ID_SET_BASE_VALUE = 0,
+    CMD_ID_SET_FILE_LIMIT = CMD_ID_SET_BASE_VALUE,              /*0:set log file max size,unit KB*/
+    CMD_ID_SET_FILE_PATH,                                       /*1:set log output path*/
+    CMD_ID_SET_LOG_LEVEL,                                       /*2:set log output level*/
+    CMD_ID_GET_LOG_LEVEL,                                       /*3:get log level value*/
+    CMD_ID_MAX_VALUE,
 }logm_cmdid_t,*logm_cmdid_p;
 
 extern int dolog2file (logm_loglevel_t level,const char *format, ...);
