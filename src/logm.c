@@ -93,7 +93,7 @@ void* logtofile_monitor_task(void * data)
         
         usleep(100*1000);
     }
-	return NULL;
+    return NULL;
 }
 #endif
 /**
@@ -146,15 +146,12 @@ static int log2file_init(logm_tcb_t * param)
 
 static int log2file_cleanup(logm_tcb_t * param)
 {
-#if 0   
-    fd = open(LOG_PATH,O_RDWR | O_CREAT | O_TRUNC, 0777);
-    if(fd < 0)
+    if((g_logm_obj_p->fd) > 0)
     {
-        return -1;
+        close(g_logm_obj_p->fd);
+        g_logm_obj_p->fd = -1;
     }
-    gLogCtrlObj.fd = fd;
     return 0;
-#endif  
 }
 
 /**
@@ -200,7 +197,8 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
         {
             lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }
-        write(g_logm_obj_p->fd,buff,len);
+        if(len != write(g_logm_obj_p->fd,buff,len));
+            return -1;
     }
     pthread_mutex_unlock(&g_logm_obj_p->lock);
     return 0;

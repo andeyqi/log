@@ -14,6 +14,9 @@ OBJDUMP		= $(CROSS_COMPILE)objdump
 export AS LD CC CPP AR NM
 export STRIP OBJCOPY OBJDUMP
 
+# Do not print "Entering directory ..."
+MAKEFLAGS += --no-print-directory
+
 CFLAGS := -Wall -Os
 CFLAGS += -I $(shell pwd)/include  -I $(shell pwd)/src
 
