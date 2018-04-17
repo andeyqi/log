@@ -197,7 +197,7 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
         {
             lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }
-        if(len != write(g_logm_obj_p->fd,buff,len));
+        if(unlikely(len != write(g_logm_obj_p->fd,buff,len)));
             return -1;
     }
     pthread_mutex_unlock(&g_logm_obj_p->lock);

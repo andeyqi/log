@@ -33,6 +33,13 @@
 #define PER_LOG_LIMIT   (200)
 #define KB              (1024)
 
+# ifndef likely
+#  define likely(x) (__builtin_expect(!!(x), 1))
+# endif
+# ifndef unlikely
+#  define unlikely(x)   (__builtin_expect(!!(x), 0))
+# endif
+
 typedef struct logm_tcb{
     int              len_limit;
     logm_loglevel_t  level;
