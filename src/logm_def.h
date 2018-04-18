@@ -29,6 +29,7 @@
 #define __LOGM_DEF_H__
 
 #include "logm.h"
+#include "logm_cfg.h"
 
 #define PER_LOG_LIMIT   (200)
 #define KB              (1024)
@@ -53,6 +54,12 @@ typedef struct logm_struct{
     int fd;
     pthread_mutex_t lock;
     int is_initd;
+#ifdef USE_LOG_MODULE_FILTER
+	struct filter{
+		int isstart;
+		unsigned char*  log_filter;
+	}filter;
+#endif
     int (*init)(logm_tcb_p);
     int (*cleanup)(logm_tcb_p);
     int (*ctrl)(unsigned int,void*);

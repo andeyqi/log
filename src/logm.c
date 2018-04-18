@@ -47,6 +47,15 @@
 
 logm_struct_p g_logm_obj_p;
 
+#if defined USE_LOG_MODULE_FILTER
+
+static void logm_set_filter()
+{
+    
+}
+
+#endif
+
 #ifdef USE_MONITOR_TASK
 int log2file_ctrl(int cmdid,void* data);
 
@@ -132,6 +141,15 @@ static int log2file_init(logm_tcb_t * param)
         pthread_create(&tid,NULL,logtofile_monitor_task,NULL);
     }
 #endif
+#ifdef USE_LOG_MODULE_FILTER
+    #if defined LOGM_MAX_NUMS_MODULE
+        g_logm_obj_p->filter.log_filter = (unsigned char*)malloc((LOGM_MAX_NUMS_MODULE+sizeof(unsigned char))/sizeof(unsigned char));
+        memset(g_logm_obj_p->filter.log_filter,0x00,(LOGM_MAX_NUMS_MODULE+sizeof(unsigned char))/sizeof(unsigned char));
+        //g_logm_obj_p->filter.isstart = 1;
+    #else
+        #error "USE_LOG_MODULE_FILTER is depend on LOGM_MAX_NUMS_MODULE,please define LOGM_MAX_NUMS_MODULE" 
+    #endif
+#endif
     free(temp_file_path);
     return 0;  
 }
@@ -172,6 +190,13 @@ int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...
     {
         g_logm_obj_p->init(NULL);
     }
+#if defined USE_LOG_MODULE_FILTER && defined LOGM_MAX_NUMS_MODULE
+    if(g_logm_obj_p->filter.isstart == 1)
+    {
+        
+    }
+#endif
+
 #ifndef USE_TIME_MODE_YY_MM_DD_HH_MM_MM
     struct  timeval tv;
     /* Get system time */
@@ -254,6 +279,12 @@ logm_struct_t g_logm_obj = {
         },
     .name = "log2file",
     .fd = -1,
+#ifdef USE_LOG_MODULE_FILTER
+    .filter = {
+        .isstart = 0,
+        .log_filter = NULL,
+    },
+#endif
     .is_initd = 0,
     .lock = PTHREAD_MUTEX_INITIALIZER,
     .init       = log2file_init,

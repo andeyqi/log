@@ -30,4 +30,9 @@
 
 #define USE_TIME_MODE_YY_MM_DD_HH_MM_MM
 #define USE_MONITOR_TASK
+#define USE_LOG_MODULE_FILTER
+
+/* configure the max values of module */
+#define LOGM_MAX_NUMS_MODULE    (1024)
+
 #endif /* end of __LOGM_CFG_H__ */
