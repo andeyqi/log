@@ -48,12 +48,8 @@ typedef enum logm_cmdid{
     CMD_ID_MAX_VALUE,
 }logm_cmdid_t,*logm_cmdid_p;
 
-extern int dolog2file (logm_loglevel_t level,const char *format, ...);
+extern int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...);
 
-#define logm_debug(fmt, ...)         dolog2file(LOG_DEBUG,fmt,##__VA_ARGS__)
-#define logm_info(fmt, ...)          dolog2file(LOG_INFO,fmt,##__VA_ARGS__)
-#define logm_warning(fmt, ...)       dolog2file(LOG_WARNING,fmt,##__VA_ARGS__)
-#define logm_err(fmt, ...)           dolog2file(LOG_ERR,fmt,##__VA_ARGS__)
 //extern set_logm_parameter(logm_cmdid_t cmdid,void * data);
 
 #ifdef __cplusplus

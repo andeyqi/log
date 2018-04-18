@@ -31,6 +31,13 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#define TEST_MODULE_ID 0
+
+#define logm_debug(fmt, ...)         dolog2file(LOG_DEBUG,TEST_MODULE_ID,fmt,##__VA_ARGS__)
+#define logm_info(fmt, ...)          dolog2file(LOG_INFO,TEST_MODULE_ID,fmt,##__VA_ARGS__)
+#define logm_warning(fmt, ...)       dolog2file(LOG_WARNING,TEST_MODULE_ID,fmt,##__VA_ARGS__)
+#define logm_err(fmt, ...)           dolog2file(LOG_ERR,TEST_MODULE_ID,fmt,##__VA_ARGS__)
+
 void * start_routine (void *data)
 {
     while(1)

@@ -162,7 +162,7 @@ static int log2file_cleanup(logm_tcb_t * param)
  * @return write data length
  */
 
-int dolog2file (logm_loglevel_t level,const char *format, ...)
+int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...)
 {  
     static const char * const logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
@@ -176,13 +176,13 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
     struct  timeval tv;
     /* Get system time */
     gettimeofday(&tv,NULL);
-    len = snprintf(buff,PER_LOG_LIMIT,"[%ld:%ld][%s]",tv.tv_sec,tv.tv_usec/1000,logLeverStr[level]);
+    len = snprintf(buff,PER_LOG_LIMIT,"<%d>[%ld:%ld][%s]",modid,tv.tv_sec,tv.tv_usec/1000,logLeverStr[level]);
 #else
     struct tm * ptm;
     struct timeb curr;
     ftime(&curr);
     ptm = localtime(&curr.time);
-    len = snprintf(buff,PER_LOG_LIMIT,"[%4d-%02d-%02d %02d:%02d:%02d :%3d][%s]",ptm->tm_year + 1900, ptm->tm_mon + 1,\
+    len = snprintf(buff,PER_LOG_LIMIT,"<%d>[%4d-%02d-%02d %02d:%02d:%02d :%3d][%s]",modid,ptm->tm_year + 1900, ptm->tm_mon + 1,\
                     ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec,curr.millitm,logLeverStr[level]);
 #endif
     va_list args;
@@ -197,8 +197,11 @@ int dolog2file (logm_loglevel_t level,const char *format, ...)
         {
             lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }
-        if(unlikely(len != write(g_logm_obj_p->fd,buff,len)));
+        if(unlikely(len != write(g_logm_obj_p->fd,buff,len)))
+        {
+            pthread_mutex_unlock(&g_logm_obj_p->lock);
             return -1;
+        }
     }
     pthread_mutex_unlock(&g_logm_obj_p->lock);
     return 0;
