@@ -93,7 +93,7 @@ void* logtofile_monitor_task(void * data)
     
     while(1)
     {
-        sscanf(pstr,"%d",(int*)&level);
+        sscanf(pstr,"%d:",(int*)&level);
         if(!log2file_ctrl(CMD_ID_GET_LOG_LEVEL,(void*)&current_level))
         {
             if(level != current_level)
@@ -184,7 +184,7 @@ int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...
 {  
     static const char * const logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
-    int len = 0;
+    int32_t len = 0;
     pthread_mutex_lock(&g_logm_obj_p->lock);
     if(!g_logm_obj_p->is_initd)
     {
@@ -218,7 +218,7 @@ int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...
     /* Write to file */
     if(g_logm_obj_p->tcb.level <= level)
     {
-        if((len + lseek(g_logm_obj_p->fd, 0L, SEEK_CUR)) > g_logm_obj_p->tcb.len_limit*KB)
+        if((len + lseek(g_logm_obj_p->fd, 0L, SEEK_CUR)) >= g_logm_obj_p->tcb.len_limit*KB)
         {
             lseek(g_logm_obj_p->fd, 0L, SEEK_SET);
         }

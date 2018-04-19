@@ -69,7 +69,7 @@ int main(int argc,char ** argv)
         logm_info("hello %d\n",2);         
         logm_warning("hello %d\n",3);       
         logm_err("hello %d\n",4); 
-        sleep(1);
+        //sleep(1);
     }
     return 0;
 }
