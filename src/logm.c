@@ -40,6 +40,8 @@
 #include "logm_def.h"
 #include "logm_cfg.h"
 #include <sys/mman.h>
+#include <semaphore.h>
+
 
 #ifdef USE_TIME_MODE_YY_MM_DD_HH_MM_MM
 #include <sys/timeb.h>
@@ -78,7 +80,13 @@ void* logtofile_monitor_task(void * data)
     {
         return NULL;
     }
-    
+    sem_t* sem = NULL;
+    sem = sem_open( "logm", (O_RDWR | O_CREAT ), 0666, 0 );
+    if( sem == SEM_FAILED )
+    {
+        perror("sem_open :");
+        return -1;
+    }
     ret = ftruncate(fd, 1024);
     if( ret < 0 )
     {
@@ -93,6 +101,9 @@ void* logtofile_monitor_task(void * data)
     
     while(1)
     {
+        printf("before sem wait\n");
+        sem_wait( sem );
+        printf("after sem wait\n");
         sscanf(pstr,"%d:",(int*)&level);
         if(!log2file_ctrl(CMD_ID_GET_LOG_LEVEL,(void*)&current_level))
         {
