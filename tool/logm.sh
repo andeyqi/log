@@ -50,4 +50,9 @@ done
 
 if [ $ctrl_flag -eq 1 ];then
     set_logm_param
+    if [ -f toolsync ];then
+        ./toolsync
+    else
+        echo -e "\033[31m can't find logmsync file \033[0m"
+    fi   
 fi

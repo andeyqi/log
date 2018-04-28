@@ -42,7 +42,6 @@
 #include <sys/mman.h>
 #include <semaphore.h>
 
-
 #ifdef USE_TIME_MODE_YY_MM_DD_HH_MM_MM
 #include <sys/timeb.h>
 #endif
@@ -51,10 +50,10 @@ logm_struct_p g_logm_obj_p;
 
 #if defined USE_LOG_MODULE_FILTER
 
-static void logm_set_filter()
-{
+// static void logm_set_filter()
+// {
     
-}
+// }
 
 #endif
 
@@ -76,16 +75,19 @@ void* logtofile_monitor_task(void * data)
     logm_loglevel_t current_level,level; 
     
     fd = shm_open( "logm", (O_RDWR | O_CREAT ), 0666 );
+    
     if( fd < 0 )
     {
         return NULL;
     }
+    
+    sem_unlink("logm");
     sem_t* sem = NULL;
     sem = sem_open( "logm", (O_RDWR | O_CREAT ), 0666, 0 );
     if( sem == SEM_FAILED )
     {
         perror("sem_open :");
-        return -1;
+        return NULL;
     }
     ret = ftruncate(fd, 1024);
     if( ret < 0 )
@@ -101,9 +103,7 @@ void* logtofile_monitor_task(void * data)
     
     while(1)
     {
-        printf("before sem wait\n");
         sem_wait( sem );
-        printf("after sem wait\n");
         sscanf(pstr,"%d:",(int*)&level);
         if(!log2file_ctrl(CMD_ID_GET_LOG_LEVEL,(void*)&current_level))
         {

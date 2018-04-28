@@ -21,30 +21,39 @@ CFLAGS := -Wall -Os
 CFLAGS += -I $(shell pwd)/include  -I $(shell pwd)/src
 
 LDFLAGS := -lpthread -lrt
+TOOLLDFLAGS := -lpthread -lrt
+
 export CFLAGS LDFLAGS
 
 TOPDIR := $(shell pwd)
 export TOPDIR
 
 TARGET := logm
-
+TOOLTARGET := toolsync
+TOOLPATH := $(TOPDIR)/tool
 obj-y += test/
 obj-y += src/
 
 
 
-all : 
+all : tools
 	make -C ./ -f $(TOPDIR)/Makefile.build
 	$(CC) $(LDFLAGS) -o $(TARGET) built-in.o
+
+toolsync :$(TOOLPATH)/logm_unlock.c
+	$(CC) $(TOOLLDFLAGS) -o $(TOOLPATH)/$@  $^
+
+tools : toolsync
 
 clean:
 	rm -f $(shell find -name "*.o")
 	rm -f $(shell find -name "*.log")
 	rm -f $(TARGET)
+	rm -f $(TOOLPATH)/$(TOOLTARGET)
 
 distclean:
 	rm -f $(shell find -name "*.o")
 	rm -f $(shell find -name "*.d")
 	rm -f $(shell find -name "*.log")
 	rm -f $(TARGET)
-	
+	rm -f $(TOOLPATH)/$(TOOLTARGET)
