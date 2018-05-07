@@ -41,6 +41,20 @@
 #  define unlikely(x)   (__builtin_expect(!!(x), 0))
 # endif
 
+static forceinline void cq_spinLock(volatile long* exclusion)
+{
+    while (__sync_lock_test_and_set(exclusion, 1))
+        while (*exclusion)
+            ;
+}
+
+static forceinline void cq_spinUnlock(volatile long* exclusion)
+{
+    __sync_synchronize();
+    *exclusion = 0;
+}
+
+
 typedef struct logm_tcb{
     int              len_limit;
     logm_loglevel_t  level;
@@ -55,10 +69,10 @@ typedef struct logm_struct{
     pthread_mutex_t lock;
     int is_initd;
 #ifdef USE_LOG_MODULE_FILTER
-	struct filter{
-		int isstart;
-		unsigned char*  log_filter;
-	}filter;
+    struct filter{
+        int isstart;
+        unsigned char*  log_filter;
+    }filter;
 #endif
     int (*init)(logm_tcb_p);
     int (*cleanup)(logm_tcb_p);
