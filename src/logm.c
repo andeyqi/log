@@ -196,7 +196,8 @@ int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...
     static const char * const logLeverStr[] = {"DEBUG","INFO","WARNING","ERROR"};
     char buff[PER_LOG_LIMIT] = {0};
     int32_t len = 0;
-    pthread_mutex_lock(&g_logm_obj_p->lock);
+    //pthread_mutex_lock(&g_logm_obj_p->lock);
+    cq_spinLock(&g_logm_obj_p->spin_lock);
     if(!g_logm_obj_p->is_initd)
     {
         g_logm_obj_p->init(NULL);
@@ -235,11 +236,13 @@ int dolog2file (logm_loglevel_t level,unsigned int modid,const char *format, ...
         }
         if(unlikely(len != write(g_logm_obj_p->fd,buff,len)))
         {
-            pthread_mutex_unlock(&g_logm_obj_p->lock);
+            //pthread_mutex_unlock(&g_logm_obj_p->lock);
+            cq_spinUnlock(&g_logm_obj_p->spin_lock);
             return -1;
         }
     }
-    pthread_mutex_unlock(&g_logm_obj_p->lock);
+    cq_spinUnlock(&g_logm_obj_p->spin_lock);
+    //pthread_mutex_unlock(&g_logm_obj_p->lock);
     return 0;
 }
 
@@ -298,6 +301,7 @@ logm_struct_t g_logm_obj = {
 #endif
     .is_initd = 0,
     .lock = PTHREAD_MUTEX_INITIALIZER,
+    .spin_lock = 0,
     .init       = log2file_init,
     .cleanup    = log2file_cleanup,
     .logout     = dolog2file,
