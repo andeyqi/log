@@ -41,8 +41,31 @@
 #  define unlikely(x)   (__builtin_expect(!!(x), 0))
 # endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef __GNUC__
+    #error please use gcc to compile the file.
+#endif
+
+#if __GNUC__<4 || (__GNUC__==4 && __GNUC_MINOR__<1)
+    #error GCC version must be greater or equal than 4.1.2
+#endif
+
+
+/*
+ *     ┌─────────────────────┬──────────────────┐
+ *     │          需求       │   建议加锁方法   │
+ *     ├─────────────────────┼──────────────────┤
+ *     │    低开销加锁       │  优先使用自旋锁  │
+ *     ├─────────────────────┴──────────────────┤
+ *     │    短期锁定         │  优先使用自旋锁  │
+ *     ├─────────────────────┴──────────────────┤
+ *     │    长期加锁         │  优先使用互斥锁  │
+ *     ├─────────────────────┴──────────────────┤
+ *     │    持有锁需要休眠   │  使用互斥锁      │
+ *     └─────────────────────┴──────────────────┘
+ */
+
+
+#define forceinline __attribute__((always_inline))
 
 static forceinline void cq_spinLock(volatile long* exclusion)
 {
