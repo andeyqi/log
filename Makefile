@@ -1,5 +1,6 @@
 
-#CROSS_COMPILE = arm-none-eabi-
+#CROSS_COMPILE = arm-poky-linux-gnueabi-
+#CROSS_CFLAGS = -march=armv7-a -mfpu=neon  -mfloat-abi=hard -mcpu=cortex-a9 --sysroot=/opt/sdk/262/sysroots/cortexa9hf-neon-poky-linux-gnueabi
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
 CC		= $(CROSS_COMPILE)gcc
@@ -17,10 +18,13 @@ export STRIP OBJCOPY OBJDUMP
 # Do not print "Entering directory ..."
 MAKEFLAGS += --no-print-directory
 
-CFLAGS := -Wall -Os
+TARGET := logm
+TOOLTARGET := toolsync
+
+CFLAGS := -Wall -Os $(CROSS_CFLAGS)
 CFLAGS += -I $(shell pwd)/include  -I $(shell pwd)/src
 
-LDFLAGS := -lpthread -lrt
+LDFLAGS := -lpthread -lrt -Wl,-Map,$(TARGET).map
 TOOLLDFLAGS := -lpthread -lrt
 
 export CFLAGS LDFLAGS
@@ -28,20 +32,17 @@ export CFLAGS LDFLAGS
 TOPDIR := $(shell pwd)
 export TOPDIR
 
-TARGET := logm
-TOOLTARGET := toolsync
-TOOLPATH := $(TOPDIR)/tool
 obj-y += test/
 obj-y += src/
-
+TOOLPATH := $(TOPDIR)/tool
 
 
 all : tools
 	make -C ./ -f $(TOPDIR)/Makefile.build
-	$(CC) $(LDFLAGS) -o $(TARGET) built-in.o
+	$(CC) $(CFLAGS) -o $(TARGET) built-in.o $(LDFLAGS) 
 
 toolsync :$(TOOLPATH)/logm_unlock.c
-	$(CC) $(TOOLLDFLAGS) -o $(TOOLPATH)/$@  $^
+	$(CC) $(CFLAGS) $^ -o $(TOOLPATH)/$@  $(TOOLLDFLAGS)
 
 tools : toolsync
 
