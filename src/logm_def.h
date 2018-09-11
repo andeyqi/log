@@ -41,6 +41,9 @@
 #  define unlikely(x)   (__builtin_expect(!!(x), 0))
 # endif
 
+#include <stdio.h>
+#include <stdlib.h>
+
 static forceinline void cq_spinLock(volatile long* exclusion)
 {
     while (__sync_lock_test_and_set(exclusion, 1))
@@ -67,6 +70,7 @@ typedef struct logm_struct{
     char* name;
     int fd;
     pthread_mutex_t lock;
+    volatile long spin_lock;
     int is_initd;
 #ifdef USE_LOG_MODULE_FILTER
     struct filter{
